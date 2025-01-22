@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.RequestFeatures;
+using System.Text.Json;
+
 
 namespace CompanyEmployees.Presentation.Controllers
 {
@@ -23,10 +21,11 @@ namespace CompanyEmployees.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployeesForCompany(Guid companyId)
+        public async Task<IActionResult> GetEmployeesForCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
-            var employees = await _service.EmployeeService.GetEmployeesAsync(companyId, trackchanges:false);
-            return Ok(employees);
+            var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId, employeeParameters, trackChanges: false);
+            Response.Headers.Add("X-Pagination",JsonSerializer.Serialize(pagedResult.metaData));
+            return Ok(pagedResult.employees);
         }
 
         [HttpGet("{employeeId:guid}",Name = "GetEmployeeForCompany")]
@@ -40,12 +39,6 @@ namespace CompanyEmployees.Presentation.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(Guid companyId, EmployeeForCreationDto employee)
         {
-            if (employee == null)
-                return BadRequest("EmployeeForCreationDto object is null");
-
-            if (!ModelState.IsValid)
-                return UnprocessableEntity(ModelState);
-
             var employeeToReturn = await _service.EmployeeService.CreateEmployeeForCompanyAsync(companyId, employee,trackChanges: false);
 
             return CreatedAtRoute("GetEmployeeForCompany",new {companyId=companyId,employeeId = employeeToReturn.id},employeeToReturn); 

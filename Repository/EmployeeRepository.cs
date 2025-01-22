@@ -1,11 +1,8 @@
 ﻿using Contracts;
 using Entities.models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.RequestFeatures;
+
 
 namespace Repository
 {
@@ -13,9 +10,11 @@ namespace Repository
     {
         public EmployeeRepository(RepositoryContext repositoryContext) : base(repositoryContext) { }
 
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync(Guid companyId, bool trackchanges) =>
-          await  FindByCondition(e => e.CompanyId.Equals(companyId), trackchanges)
-                .OrderBy(e => e.Name).ToListAsync();
+        public async Task<PagedList<Employee>> GetEmployeesAsync(Guid companyId,EmployeeParameters employeeParameters, bool trackchanges)
+        {
+            var employees = await FindByCondition(e => e.CompanyId.Equals(companyId),trackchanges).OrderBy(e => e.Name).ToListAsync();
+            return PagedList<Employee>.ToPagedList(employees,employeeParameters.PageNumber,employeeParameters.PageSize);
+        }
 
         public async Task<Employee> GetEmployeeAsync(Guid companyId, Guid employeeId, bool trackchanges) =>
            await FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(employeeId), trackchanges).SingleOrDefaultAsync();
