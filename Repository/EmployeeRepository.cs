@@ -14,8 +14,7 @@ namespace Repository
         public async Task<PagedList<Employee>> GetEmployeesAsync(Guid companyId,EmployeeParameters employeeParameters, bool trackchanges)
         {
             var employees = await FindByCondition(e => e.CompanyId.Equals(companyId),trackchanges).FilterEmployees(employeeParameters.MinAge, employeeParameters.MaxAge)
-            .Search(employeeParameters.SearchTerm)
-                .OrderBy(e => e.Name)
+            .Search(employeeParameters.SearchTerm).Sort(employeeParameters.OrderBy)
                     .ToListAsync();
 
             return PagedList<Employee>
