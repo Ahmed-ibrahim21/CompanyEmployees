@@ -1,5 +1,4 @@
-﻿using System;
-using CompanyEmployees.Presentation.ActionFilters;
+﻿using CompanyEmployees.Presentation.ActionFilters;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -20,6 +19,7 @@ namespace CompanyEmployees.Presentation.Controllers
         public EmployeesController(IServiceManager service) => _service = service;
 
         [HttpGet]
+        [HttpHead]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetEmployeesForCompany(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
