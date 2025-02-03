@@ -50,6 +50,9 @@ namespace CompanyEmployees
 
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddAuthentication();
+            builder.Services.ConfigureIdentity();
+
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -60,6 +63,8 @@ namespace CompanyEmployees
             builder.Services.AddScoped<IEmployeeLinks,EmployeeLinks>();
 
             builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+
+            builder.Services.ConfigureJWT(builder.Configuration);
 
             builder.Services.AddControllers(config =>
             {
@@ -94,7 +99,7 @@ namespace CompanyEmployees
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
 
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
