@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Entities.configurationModels;
+using Microsoft.OpenApi.Models;
 
 
 
@@ -180,4 +181,55 @@ Period = "5m"
     public static void AddJwtConfiguration(this IServiceCollection services,
 IConfiguration configuration) =>
 services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
+
+    public static void ConfigureSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(s =>
+        {
+            s.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "CompanyEmployees API",
+                Version = "v1",
+                Description = "CompanyEmployees API by Ahmed Ibrahim",
+                TermsOfService = new Uri("https://example.com/terms"),
+                Contact = new OpenApiContact
+                {
+                    Name = "Ahmed Ibrahim",
+                    Email = "ai.ahmed.ibrahim21@gmail.com",
+                    Url = new Uri("https://www.linkedin.com/in/ahmed-ibrahim-167294250/"),
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "CompanyEmployees API LICX",
+                    Url = new Uri("https://example.com/license"),
+                }
+            });
+            s.SwaggerDoc("v2", new OpenApiInfo { Title = "Code Maze API", Version = "v2" });
+
+            s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Place to add JWT with Bearer",
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+
+            s.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Name = "Bearer",
+                    },
+                    new List<string>()
+                }
+            });
+        });
+    }
 }

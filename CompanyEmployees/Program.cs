@@ -67,6 +67,8 @@ namespace CompanyEmployees
             builder.Services.ConfigureJWT(builder.Configuration);
             builder.Services.AddJwtConfiguration(builder.Configuration);
 
+            builder.Services.ConfigureSwagger();
+
 
             builder.Services.AddControllers(config =>
             {
@@ -100,6 +102,13 @@ namespace CompanyEmployees
             app.UseCors("CorsPolicy");
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(s =>
+            {
+                s.SwaggerEndpoint("/swagger/v1/swagger.json", "Code Maze API v1");
+                s.SwaggerEndpoint("/swagger/v2/swagger.json", "Code Maze API v2");
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();
