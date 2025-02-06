@@ -65,6 +65,8 @@ namespace CompanyEmployees
             builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
             builder.Services.ConfigureJWT(builder.Configuration);
+            builder.Services.AddJwtConfiguration(builder.Configuration);
+
 
             builder.Services.AddControllers(config =>
             {
